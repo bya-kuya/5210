@@ -3,21 +3,14 @@
 
 # In[ ]:
 
+import re
 
 def clean_text(text):
     """Lowercase, remove special characters, and strip whitespace."""
+    import re
     text = text.lower()
     text = re.sub(r'[\W_]+', ' ', text)  # Replace all non-word characters with space
     return text.strip()
-
-# Apply text cleaning
-left_df['name'] = left_df['name'].apply(clean_text)
-left_df['state'] = left_df['state'].apply(clean_text)
-left_df['city'] = left_df['city'].apply(clean_text)
-right_df['name'] = right_df['name'].apply(clean_text)
-right_df['state'] = right_df['state'].apply(clean_text)
-right_df['city'] = right_df['city'].apply(clean_text)
-
 
 # In[ ]:
 
@@ -27,12 +20,10 @@ def standardize_zip_code(zip_code):
     zip_code = str(zip_code)
     return zip_code[:5].zfill(5)  # Pad or truncate to ensure 5 characters
 
-right_df['zip_code'] = right_df['zip_code'].apply(standardize_zip_code)
-left_df['postal_code'] = left_df['postal_code'].apply(standardize_zip_code)
-
-
 # In[ ]:
 
+import pandas as pd
+import re
 
 def clean_address(address):
     """Standardize and clean the address, handling NaN values gracefully."""
@@ -46,11 +37,6 @@ def clean_address(address):
     address = re.sub(r'[^a-zA-Z0-9\s]', '', address)  # Remove non-alphanumeric characters except space
     address = re.sub(r'\s+', ' ', address).strip()  # Replace multiple spaces with a single space
     return address
-
-# Now apply the cleaning function to the DataFrame columns
-left_df['address'] = left_df['address'].apply(clean_address)
-right_df['address'] = right_df['address'].apply(clean_address)
-
 
 # In[ ]:
 
@@ -67,6 +53,7 @@ def create_enhanced_block_keys(df):
 
 # In[ ]:
 
+from rapidfuzz import process, fuzz
 
 def fuzzy_match_with_rapidfuzz(left_df, right_df, threshold=85):
     results = []
@@ -88,9 +75,9 @@ def fuzzy_match_with_rapidfuzz(left_df, right_df, threshold=85):
             if best_match:
                 # Accessing details of the best match
                 match_data = {
-                    'left_id': left_row['entity_id'],
-                    'right_id': right_block.loc[best_match[2]]['business_id'],
-                    'match_score': best_match[1]
+                    'left_dataset': left_row['entity_id'],
+                    'right_dataset': right_block.loc[best_match[2]]['business_id'],
+                    'confidence_score': best_match[1]
                 }
                 results.append(match_data)
                 
