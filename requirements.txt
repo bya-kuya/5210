@@ -2,3 +2,4 @@ rapidfuzz
 pandas
 re
 difflib
+recordlinkage
