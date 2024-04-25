@@ -1,5 +1,5 @@
 rapidfuzz
 jellyfish
-fuzzy 
+fuzzywuzzy
 difflib
 recordlinkage
